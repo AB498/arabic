@@ -13,6 +13,8 @@ public class MainActivity extends Activity
 {
 	static Activity ctx;    
 	static TextView data;
+	SharedPreferences sharedPref;
+	SharedPreferences.Editor editor;
 	@Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -25,16 +27,27 @@ public class MainActivity extends Activity
 		//String dat=Filess.read(getApplicationContext(),"1arabic.txt",5000,true);
 		//data.setText(dat);
 		
+		sharedPref = getPreferences(Context.MODE_PRIVATE);
+		editor = sharedPref.edit();
+		
 		
 		Switch sw = findViewById(R.id.start);
+		
+		if(sharedPref.getString("running","")=="true"){
+			sw.setChecked(true);
+		}
 		
 		sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					
 					if(isChecked){
 						startService(new Intent(MainActivity.this, FloatWindowService.class));  
+						editor.putString("running","true");
+						editor.apply();
 					}else{
 						stopService(new Intent(MainActivity.this, FloatWindowService.class));  
+						editor.putString("running","false");
+						editor.apply();
 					}
 				}
 			});
